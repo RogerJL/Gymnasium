@@ -241,11 +241,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../wrappers/action_wrappers/">Action Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../wrappers/observation_wrappers/">Observation Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../wrappers/reward_wrappers/">Reward Wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wrappers/vector_wrappers/">Vector wrappers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../vector/">Vector environments</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vector environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../vector/wrappers/">Vector Wrappers</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../vector/">Vectorize</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vectorize</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../vector/wrappers/">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../vector/async_vector_env/">AsyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../vector/sync_vector_env/">SyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../vector/utils/">Utility functions</a></li>
@@ -415,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/training_agents/FrozenLake_tuto/">Frozenlake benchmark</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/third-party-tutorials/">Third-Party Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.comet.com/docs/v2/integrations/ml-frameworks/gymnasium/?utm_source=gymnasium&amp;utm_medium=partner&amp;utm_campaign=partner_gymnasium_2023&amp;utm_content=docs_gymnasium">Comet Tutorial</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -479,7 +479,7 @@
           </div>
           <article role="main">
             
-            <section id="make-and-register">
+            <section class="tex2jax_ignore mathjax_ignore" id="make-and-register">
 <h1>Make and register<a class="headerlink" href="#make-and-register" title="Link to this heading">#</a></h1>
 <p>Gymnasium allows users to automatically load environments, pre-wrapped with several important wrappers through the <a class="reference internal" href="#gymnasium.make" title="gymnasium.make"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gymnasium.make()</span></code></a> function. To do this, the environment must be registered prior with <a class="reference internal" href="#gymnasium.register" title="gymnasium.register"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gymnasium.register()</span></code></a>. To get the environment specifications for a registered environment, use <a class="reference internal" href="#gymnasium.spec" title="gymnasium.spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gymnasium.spec()</span></code></a> and to print the whole registry, use <a class="reference internal" href="#gymnasium.pprint_registry" title="gymnasium.pprint_registry"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gymnasium.pprint_registry()</span></code></a>.</p>
 <dl class="py function">

@@ -241,11 +241,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/action_wrappers/">Action Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/observation_wrappers/">Observation Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/reward_wrappers/">Reward Wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/vector_wrappers/">Vector wrappers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/vector/">Vector environments</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vector environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/vector/wrappers/">Vector Wrappers</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/vector/">Vectorize</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vectorize</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/vector/wrappers/">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/async_vector_env/">AsyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/sync_vector_env/">SyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/utils/">Utility functions</a></li>
@@ -415,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/training_agents/FrozenLake_tuto/">Frozenlake benchmark</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/third-party-tutorials/">Third-Party Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.comet.com/docs/v2/integrations/ml-frameworks/gymnasium/?utm_source=gymnasium&amp;utm_medium=partner&amp;utm_campaign=partner_gymnasium_2023&amp;utm_content=docs_gymnasium">Comet Tutorial</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -479,7 +479,7 @@
           </div>
           <article role="main">
             
-            <section id="recording-agents">
+            <section class="tex2jax_ignore mathjax_ignore" id="recording-agents">
 <h1>Recording Agents<a class="headerlink" href="#recording-agents" title="Link to this heading">#</a></h1>
 <p>During training or when evaluating an agent, it may be interesting to record agent behaviour over an episode and log the total reward accumulated. This can be achieved through two wrappers: <code class="xref py py-class docutils literal notranslate"><span class="pre">RecordEpisodeStatistics</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">RecordVideo</span></code>, the first tracks episode data such as the total rewards, episode length and time taken and the second generates mp4 videos of the agents using the environment renderings.</p>
 <p>We show how to apply these wrappers for two types of problems; the first for recording data for every episode (normally evaluation) and second for recording data periodiclly (for normal training).</p>

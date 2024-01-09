@@ -241,11 +241,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/wrappers/action_wrappers/">Action Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/wrappers/observation_wrappers/">Observation Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/wrappers/reward_wrappers/">Reward Wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../api/wrappers/vector_wrappers/">Vector wrappers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/vector/">Vector environments</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vector environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../api/vector/wrappers/">Vector Wrappers</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/vector/">Vectorize</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vectorize</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/vector/wrappers/">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/vector/async_vector_env/">AsyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/vector/sync_vector_env/">SyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/vector/utils/">Utility functions</a></li>
@@ -415,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/training_agents/FrozenLake_tuto/">Frozenlake benchmark</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/third-party-tutorials/">Third-Party Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.comet.com/docs/v2/integrations/ml-frameworks/gymnasium/?utm_source=gymnasium&amp;utm_medium=partner&amp;utm_campaign=partner_gymnasium_2023&amp;utm_content=docs_gymnasium">Comet Tutorial</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -470,7 +470,7 @@
           </div>
           <article role="main">
             
-            <section id="hopper">
+            <section class="tex2jax_ignore mathjax_ignore" id="hopper">
 <h1>Hopper<a class="headerlink" href="#hopper" title="Link to this heading">#</a></h1>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../../../_images/hopper.gif"><img alt="../../../_images/hopper.gif" src="../../../_images/hopper.gif" style="width: 200px;" /></a>
@@ -599,10 +599,6 @@ In that case, the observation space will be <code class="docutils literal notran
 represents the x-coordinate of the hopper.
 Regardless of whether <code class="docutils literal notranslate"><span class="pre">exclude_current_positions_from_observation</span></code> was set to true or false, the x-coordinate
 will be returned in <code class="docutils literal notranslate"><span class="pre">info</span></code> with key <code class="docutils literal notranslate"><span class="pre">&quot;x_position&quot;</span></code>.</p>
-<p>By default, the observation does not include the robot’s x-coordinate (<code class="docutils literal notranslate"><span class="pre">rootx</span></code>).
-This can be be included by passing <code class="docutils literal notranslate"><span class="pre">exclude_current_positions_from_observation=False</span></code> during construction.
-In this case, the observation space will be a <code class="docutils literal notranslate"><span class="pre">Box(-Inf,</span> <span class="pre">Inf,</span> <span class="pre">(12,),</span> <span class="pre">float64)</span></code>, where the first observation element is the x–coordinate of the robot.
-Regardless of whether <code class="docutils literal notranslate"><span class="pre">exclude_current_positions_from_observation</span></code> is set to true or false, the x- and y-coordinates are returned in <code class="docutils literal notranslate"><span class="pre">info</span></code> with keys <code class="docutils literal notranslate"><span class="pre">&quot;x_position&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;y_position&quot;</span></code>, respectively.</p>
 <p>However, by default, the observation is a <code class="docutils literal notranslate"><span class="pre">Box(-Inf,</span> <span class="pre">Inf,</span> <span class="pre">(11,),</span> <span class="pre">float64)</span></code> where the elements
 correspond to the following:</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -727,24 +723,24 @@ Every timestep that the Hopper is healthy (see definition in section “Episode 
 it gets a reward of fixed value <code class="docutils literal notranslate"><span class="pre">healthy_reward</span></code>.</p></li>
 <li><p><em>forward_reward</em>:
 A reward for moving forward,
-this reward would be positive if the Hopper moves forward (in the positive $x$ direction / in the right direction).
-$w_{forward} \times \frac{dx}{dt}$, where
-$dx$ is the displacement of the “torso” ($x_{after-action} - x_{before-action}$),
-$dt$ is the time between actions, which depends on the <code class="docutils literal notranslate"><span class="pre">frame_skip</span></code> parameter (default is 4),
-and <code class="docutils literal notranslate"><span class="pre">frametime</span></code> which is 0.002 - so the default is $dt = 4 \times 0.002 = 0.008$,
-$w_{forward}$ is the <code class="docutils literal notranslate"><span class="pre">forward_reward_weight</span></code> (default is $1$).</p></li>
+this reward would be positive if the Hopper moves forward (in the positive <span class="math notranslate nohighlight">\(x\)</span> direction / in the right direction).
+<span class="math notranslate nohighlight">\(w_{forward} \times \frac{dx}{dt}\)</span>, where
+<span class="math notranslate nohighlight">\(dx\)</span> is the displacement of the “torso” (<span class="math notranslate nohighlight">\(x_{after-action} - x_{before-action}\)</span>),
+<span class="math notranslate nohighlight">\(dt\)</span> is the time between actions, which depends on the <code class="docutils literal notranslate"><span class="pre">frame_skip</span></code> parameter (default is 4),
+and <code class="docutils literal notranslate"><span class="pre">frametime</span></code> which is 0.002 - so the default is <span class="math notranslate nohighlight">\(dt = 4 \times 0.002 = 0.008\)</span>,
+<span class="math notranslate nohighlight">\(w_{forward}\)</span> is the <code class="docutils literal notranslate"><span class="pre">forward_reward_weight</span></code> (default is <span class="math notranslate nohighlight">\(1\)</span>).</p></li>
 <li><p><em>ctrl_cost</em>:
 A negative reward to penalize the Hopper for taking actions that are too large.
-$w_{control} \times \|action\|<em>2^2$,
-where $w</em>{control}$ is <code class="docutils literal notranslate"><span class="pre">ctrl_cost_weight</span></code> (default is $10^{-3}$).</p></li>
+<span class="math notranslate nohighlight">\(w_{control} \times \\|action\\|_2^2\)</span>,
+where <span class="math notranslate nohighlight">\(w_{control}\)</span> is <code class="docutils literal notranslate"><span class="pre">ctrl_cost_weight</span></code> (default is <span class="math notranslate nohighlight">\(10^{-3}\)</span>).</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">info</span></code> contains the individual reward terms.</p>
 </section>
 <section id="starting-state">
 <h2>Starting State<a class="headerlink" href="#starting-state" title="Link to this heading">#</a></h2>
-<p>The initial position state is $[0, 1.25, 0, 0, 0, 0] + \mathcal{U}<em>{[-reset_noise_scale \times 1</em>{6}, reset_noise_scale \times 1_{6}]}$.
-The initial velocity state is $0_6 + \mathcal{U}<em>{[-reset_noise_scale \times 1</em>{6}, reset_noise_scale \times 1_{6}]}$.</p>
-<p>where $\mathcal{U}$ is the multivariate uniform continuous distribution.</p>
+<p>The initial position state is <span class="math notranslate nohighlight">\([0, 1.25, 0, 0, 0, 0] + \mathcal{U}_{[-reset\_noise\_scale \times 1_{6}, reset\_noise\_scale \times 1_{6}]}\)</span>.
+The initial velocity state is <span class="math notranslate nohighlight">\(0_6 + \mathcal{U}_{[-reset\_noise\_scale \times 1_{6}, reset\_noise\_scale \times 1_{6}]}\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{U}\)</span> is the multivariate uniform continuous distribution.</p>
 <p>Note that the z-coordinate is non-zero so that the hopper can stand up immediately.</p>
 </section>
 <section id="episode-end">
@@ -1034,6 +1030,8 @@ These parameters can be applied during <code class="docutils literal notranslate
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=7660844c"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script>
 

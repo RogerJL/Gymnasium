@@ -241,11 +241,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/action_wrappers/">Action Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/observation_wrappers/">Observation Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/reward_wrappers/">Reward Wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api/wrappers/vector_wrappers/">Vector wrappers</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/vector/">Vector environments</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vector environments</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api/vector/wrappers/">Vector Wrappers</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/vector/">Vectorize</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Vectorize</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/vector/wrappers/">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/async_vector_env/">AsyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/sync_vector_env/">SyncVectorEnv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api/vector/utils/">Utility functions</a></li>
@@ -415,6 +414,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/training_agents/FrozenLake_tuto/">Frozenlake benchmark</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/third-party-tutorials/">Third-Party Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.comet.com/docs/v2/integrations/ml-frameworks/gymnasium/?utm_source=gymnasium&amp;utm_medium=partner&amp;utm_campaign=partner_gymnasium_2023&amp;utm_content=docs_gymnasium">Comet Tutorial</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -479,7 +479,7 @@
           </div>
           <article role="main">
             
-            <section id="third-party-environments">
+            <section class="tex2jax_ignore mathjax_ignore" id="third-party-environments">
 <h1>Third-Party Environments<a class="headerlink" href="#third-party-environments" title="Link to this heading">#</a></h1>
 <p>The Farama Foundation maintains a number of other <a class="reference external" href="https://farama.org/projects">projects</a>, most of which use Gymnasium. Topics include:
 multi-agent RL (<a class="reference external" href="https://pettingzoo.farama.org/">PettingZoo</a>),
@@ -528,6 +528,12 @@ many-agent RL (<a class="reference external" href="https://magent2.farama.org/">
 <p><img alt="Gymnasium version dependency" src="https://img.shields.io/badge/Gymnasium-v0.28.0-blue" />
 <img alt="GitHub stars" src="https://img.shields.io/github/stars/duburcqa/jiminy" /></p>
 <p>gym-jiminy presents an extension of the initial Gym for robotics using <a class="reference external" href="https://github.com/duburcqa/jiminy">Jiminy</a>, an extremely fast and light-weight simulator for poly-articulated systems using Pinocchio for physics evaluation and Meshcat for web-based 3D rendering.</p>
+</section>
+<section id="gym-pybullet-drones-environments-for-quadcopter-control">
+<h3><a class="reference external" href="https://github.com/JacopoPan/gym-pybullet-drones">gym-pybullet-drones: Environments for quadcopter control</a><a class="headerlink" href="#gym-pybullet-drones-environments-for-quadcopter-control" title="Link to this heading">#</a></h3>
+<p><img alt="Gymnasium version dependency" src="https://img.shields.io/badge/Gymnasium-v0.27.1-blue" />
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/JacopoPan/gym-pybullet-drones" /></p>
+<p>A simple environment using <a class="reference external" href="https://github.com/bulletphysics/bullet3">PyBullet</a> to simulate the dynamics of a <a class="reference external" href="https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf">Bitcraze Crazyflie 2.x</a> nanoquadrotor.</p>
 </section>
 <section id="gym-saturation-environments-used-to-prove-theorems">
 <h3><a class="reference external" href="https://github.com/inpefess/gym-saturation">gym-saturation: Environments used to prove theorems</a><a class="headerlink" href="#gym-saturation-environments-used-to-prove-theorems" title="Link to this heading">#</a></h3>
@@ -644,10 +650,6 @@ Many of these can be adapted to work with gymnasium (see <a class="reference ext
 <h3><a class="reference external" href="https://jjshoots.github.io/PyFlyt/index.html#">PyFlyt: UAV Flight Simulator Environments for Reinforcement Learning Research</a><a class="headerlink" href="#pyflyt-uav-flight-simulator-environments-for-reinforcement-learning-research" title="Link to this heading">#</a></h3>
 <p>A library for testing reinforcement learning algorithms on various UAVs.
 It is built on the <a class="reference external" href="https://github.com/bulletphysics/bullet3">Bullet</a> physics engine, offers flexible rendering options, time-discrete steppable physics, Python bindings, and support for custom drones of any configuration, be it biplanes, quadcopters, rockets, and anything you can think of.</p>
-</section>
-<section id="gym-pybullet-drones-environments-for-quadcopter-control">
-<h3><a class="reference external" href="https://github.com/JacopoPan/gym-pybullet-drones">gym-pybullet-drones: Environments for quadcopter control</a><a class="headerlink" href="#gym-pybullet-drones-environments-for-quadcopter-control" title="Link to this heading">#</a></h3>
-<p>A simple environment using <a class="reference external" href="https://github.com/bulletphysics/bullet3">PyBullet</a> to simulate the dynamics of a <a class="reference external" href="https://www.bitcraze.io/documentation/hardware/crazyflie_2_1/crazyflie_2_1-datasheet.pdf">Bitcraze Crazyflie 2.x</a> nanoquadrotor.</p>
 </section>
 <section id="marsexplorer-environments-for-controlling-robot-on-mars">
 <h3><a class="reference external" href="https://github.com/dimikout3/MarsExplorer">MarsExplorer: Environments for controlling robot on Mars</a><a class="headerlink" href="#marsexplorer-environments-for-controlling-robot-on-mars" title="Link to this heading">#</a></h3>
