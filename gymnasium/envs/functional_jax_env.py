@@ -1,6 +1,7 @@
 """Functional to Environment compatibility."""
 from __future__ import annotations
 
+from functools import partial
 from typing import Any
 
 import jax
@@ -35,6 +36,7 @@ class FunctionalJaxEnv(gym.Env):
             metadata = {"render_mode": []}
 
         self.func_env = func_env
+        self.params = {}
 
         self.observation_space = func_env.observation_space
         self.action_space = func_env.action_space
@@ -65,9 +67,10 @@ class FunctionalJaxEnv(gym.Env):
 
         rng, self.rng = jrng.split(self.rng)
 
-        self.state = self.func_env.initial(rng=rng)
-        obs = self.func_env.observation(self.state)
-        info = self.func_env.state_info(self.state)
+        self.params = {} if options is None else options.get("params")
+        self.state = self.func_env.initial(rng=rng, params=self.params)
+        obs = self.func_env.observation(self.state, params=self.params)
+        info = self.func_env.state_info(self.state, params=self.params)
 
         obs = jax_to_numpy(obs)
 
@@ -85,11 +88,17 @@ class FunctionalJaxEnv(gym.Env):
 
         rng, self.rng = jrng.split(self.rng)
 
-        next_state = self.func_env.transition(self.state, action, rng)
-        observation = self.func_env.observation(next_state)
-        reward = self.func_env.reward(self.state, action, next_state)
-        terminated = self.func_env.terminal(next_state)
-        info = self.func_env.transition_info(self.state, action, next_state)
+        next_state = self.func_env.transition(
+            self.state, action, rng, params=self.params
+        )
+        observation = self.func_env.observation(next_state, params=self.params)
+        reward = self.func_env.reward(
+            self.state, action, next_state, params=self.params
+        )
+        terminated = self.func_env.terminal(next_state, params=self.params)
+        info = self.func_env.transition_info(
+            self.state, action, next_state, params=self.params
+        )
         self.state = next_state
 
         observation = jax_to_numpy(observation)
@@ -134,6 +143,7 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
         if metadata is None:
             metadata = {}
         self.func_env = func_env
+        self.params = {}
         self.num_envs = num_envs
 
         self.single_observation_space = func_env.observation_space
@@ -177,9 +187,10 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
 
         rng = jrng.split(rng, self.num_envs)
 
-        self.state = self.func_env.initial(rng=rng)
-        obs = self.func_env.observation(self.state)
-        info = self.func_env.state_info(self.state)
+        self.params = {} if options is None else options.get("params")
+        self.state = self.func_env.initial(rng=rng, params=self.params)
+        obs = self.func_env.observation(self.state, params=self.params)
+        info = self.func_env.state_info(self.state, params=self.params)
 
         self.steps = jnp.zeros(self.num_envs, dtype=jnp.int32)
 
@@ -187,8 +198,10 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
 
         return obs, info
 
+    @partial(jax.jit, static_argnames=("self",))
     def step(self, action: ActType):
         """Steps through the environment using the action."""
+        # These will be optimized to always give same result
         if self._is_box_action_space:
             assert isinstance(self.action_space, gym.spaces.Box)  # For typing
             action = np.clip(action, self.action_space.low, self.action_space.high)
@@ -197,41 +210,40 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
             assert self.action_space.contains(
                 action
             ), f"{action!r} ({type(action)}) invalid"
-        self.steps += 1
+
+        self.steps = jnp.where(self.autoreset_envs, 0, self.steps + 1)
 
         rng, self.rng = jrng.split(self.rng)
-
         rng = jrng.split(rng, self.num_envs)
 
-        next_state = self.func_env.transition(self.state, action, rng)
-        reward = self.func_env.reward(self.state, action, next_state)
+        # compute all, can probably be optimized away if it is not using :attr:`rng`
+        new_initials = self.func_env.initial(rng, params=self.params)
+        next_state = jnp.where(
+            self.autoreset_envs,
+            new_initials,
+            self.func_env.transition(self.state, action, rng, params=self.params),
+        )
+        reward = jnp.where(
+            self.autoreset_envs,
+            0,  # restarting, jumping from end state to initial state...
+            self.func_env.reward(self.state, action, next_state, params=self.params),
+        )
 
-        terminated = self.func_env.terminal(next_state)
+        terminated = self.func_env.terminal(next_state, params=self.params)
         truncated = (
             self.steps >= self.time_limit
             if self.time_limit > 0
             else jnp.zeros_like(terminated)
         )
 
-        info = self.func_env.transition_info(self.state, action, next_state)
+        info = self.func_env.transition_info(
+            self.state, action, next_state, params=self.params
+        )
 
         done = jnp.logical_or(terminated, truncated)
-
-        if jnp.any(self.autoreset_envs):
-            to_reset = jnp.where(self.autoreset_envs)[0]
-            reset_count = to_reset.shape[0]
-
-            rng, self.rng = jrng.split(self.rng)
-            rng = jrng.split(rng, reset_count)
-
-            new_initials = self.func_env.initial(rng)
-
-            next_state = self.state.at[to_reset].set(new_initials)
-            self.steps = self.steps.at[to_reset].set(0)
-
         self.autoreset_envs = done
 
-        observation = self.func_env.observation(next_state)
+        observation = self.func_env.observation(next_state, params=self.params)
         observation = jax_to_numpy(observation)
 
         reward = jax_to_numpy(reward)
@@ -247,7 +259,7 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
         """Returns the render state if `render_mode` is "rgb_array"."""
         if self.render_mode == "rgb_array":
             self.render_state, image = self.func_env.render_image(
-                self.state, self.render_state
+                self.state, self.render_state, params=self.params
             )
             return image
         else:
@@ -256,5 +268,5 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
     def close(self):
         """Closes the environments and render state if set."""
         if self.render_state is not None:
-            self.func_env.render_close(self.render_state)
+            self.func_env.render_close(self.render_state, params=self.params)
             self.render_state = None
