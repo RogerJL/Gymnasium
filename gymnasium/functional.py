@@ -91,7 +91,7 @@ class FuncEnv(
         params: Params | None = None,
     ) -> dict:
         """Info dict about a full transition."""
-        return {}
+        return self.state_info(next_state, params=params)
 
     def transform(self, func: Callable[[Callable], Callable]):
         """Functional transformations."""

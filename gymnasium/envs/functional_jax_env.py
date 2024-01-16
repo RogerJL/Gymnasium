@@ -2,16 +2,26 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Any
+from typing import Any, Generic
 
 import jax
 import jax.numpy as jnp
 import jax.random as jrng
 import numpy as np
+from jax.random import PRNGKey
 
 import gymnasium as gym
 from gymnasium.envs.registration import EnvSpec
-from gymnasium.functional import ActType, FuncEnv, StateType
+from gymnasium.functional import (
+    ActType,
+    FuncEnv,
+    ObsType,
+    Params,
+    RenderStateType,
+    RewardType,
+    StateType,
+    TerminalType,
+)
 from gymnasium.utils import seeding
 from gymnasium.vector.utils import batch_space
 from gymnasium.wrappers.jax_to_numpy import jax_to_numpy
@@ -130,7 +140,7 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
 
     def __init__(
         self,
-        func_env: FuncEnv,
+        func_env: FuncJaxEnv,
         num_envs: int,
         max_episode_steps: int = 0,
         metadata: dict[str, Any] | None = None,
@@ -176,6 +186,9 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
         self.rng = jrng.PRNGKey(seed)
 
         self.func_env.transform(jax.vmap)
+        self.func_env.vector_step = jax.jit(
+            self.func_env.vector_step
+        )  # not vmap, handled internally
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         """Resets the environment."""
@@ -198,10 +211,8 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
 
         return obs, info
 
-    @partial(jax.jit, static_argnames=("self",))
     def step(self, action: ActType):
         """Steps through the environment using the action."""
-        # These will be optimized to always give same result
         if self._is_box_action_space:
             assert isinstance(self.action_space, gym.spaces.Box)  # For typing
             action = np.clip(action, self.action_space.low, self.action_space.high)
@@ -211,47 +222,30 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
                 action
             ), f"{action!r} ({type(action)}) invalid"
 
-        self.steps = jnp.where(self.autoreset_envs, 0, self.steps + 1)
-
-        rng, self.rng = jrng.split(self.rng)
-        rng = jrng.split(rng, self.num_envs)
-
-        # compute all, can probably be optimized away if it is not using :attr:`rng`
-        new_initials = self.func_env.initial(rng, params=self.params)
-        next_state = jnp.where(
-            self.autoreset_envs,
-            new_initials,
-            self.func_env.transition(self.state, action, rng, params=self.params),
+        (
+            observation,
+            reward,
+            terminated,
+            truncated,
+            info,
+            self.state,
+            self.steps,
+            self.rng,
+        ) = self.func_env.vector_step(
+            self.state,  # updated on return
+            action,
+            autoreset_envs=self.autoreset_envs,  # indirectly updated
+            steps=self.steps,  # updated on return
+            time_limit=self.time_limit,
+            rng=self.rng,  # updated on return
+            params=self.params,
         )
-        reward = jnp.where(
-            self.autoreset_envs,
-            0,  # restarting, jumping from end state to initial state...
-            self.func_env.reward(self.state, action, next_state, params=self.params),
-        )
-
-        terminated = self.func_env.terminal(next_state, params=self.params)
-        truncated = (
-            self.steps >= self.time_limit
-            if self.time_limit > 0
-            else jnp.zeros_like(terminated)
-        )
-
-        info = self.func_env.transition_info(
-            self.state, action, next_state, params=self.params
-        )
-
-        done = jnp.logical_or(terminated, truncated)
-        self.autoreset_envs = done
-
-        observation = self.func_env.observation(next_state, params=self.params)
+        self.autoreset_envs = jnp.logical_or(terminated, truncated)  # done
+        # prepare for return
         observation = jax_to_numpy(observation)
-
         reward = jax_to_numpy(reward)
-
         terminated = jax_to_numpy(terminated)
         truncated = jax_to_numpy(truncated)
-
-        self.state = next_state
 
         return observation, reward, terminated, truncated, info
 
@@ -268,5 +262,64 @@ class FunctionalJaxVectorEnv(gym.vector.VectorEnv):
     def close(self):
         """Closes the environments and render state if set."""
         if self.render_state is not None:
-            self.func_env.render_close(self.render_state, params=self.params)
+            self.func_env.render_close(self.render_state)
             self.render_state = None
+
+
+class FuncJaxEnv(
+    Generic[
+        StateType, ObsType, ActType, RewardType, TerminalType, RenderStateType, Params
+    ],
+    FuncEnv[
+        StateType, ObsType, ActType, RewardType, TerminalType, RenderStateType, Params
+    ],
+):
+    """Implement some JAX optimization functionality."""
+
+    @partial(jax.jit, static_argnames=("self", "time_limit", "params"))
+    def vector_step(
+        self,  # read only methods
+        prev_state: StateType,
+        action: ActType,
+        autoreset_envs: jax.Array,
+        steps: jax.Array,
+        time_limit: int,
+        rng: PRNGKey,
+        params: Params | None = None,
+    ):
+        """Optimization for FunctionalJaxVectorEnv.step().
+
+        JIT compilation of FunctionalJaxVectorEnv.step(),
+        place it here to avoid recompilation due to 'self' updates (state, rng, ...).
+        This method calls FuncEnv methods only.
+        """
+        new_steps = jnp.where(autoreset_envs, 0, steps + 1)
+        num_envs = new_steps.shape[0]
+        rng = jrng.split(rng, num_envs + 1)
+        next_rng, rng = rng[0], rng[1:]
+        # compute all, can probably be optimized away if it is not using :attr:`rng`
+        new_initials = self.initial(rng, params=params)
+        next_state = jnp.where(
+            autoreset_envs,
+            new_initials,
+            self.transition(prev_state, action, rng, params=params),
+        )
+        reward = jnp.where(
+            autoreset_envs,
+            0,  # restarting, jumping from end state to initial state...
+            self.reward(prev_state, action, next_state, params=params),
+        )
+        terminated = self.terminal(next_state, params=params)
+        truncated = jnp.logical_and(time_limit > 0, new_steps >= time_limit)
+        info = self.transition_info(prev_state, action, next_state, params=params)
+        observation = self.observation(next_state, params=params)
+        return (
+            observation,
+            reward,
+            terminated,
+            truncated,
+            info,
+            next_state,
+            new_steps,
+            next_rng,
+        )
