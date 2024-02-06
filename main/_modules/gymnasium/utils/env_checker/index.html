@@ -512,7 +512,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        If observation 1 and 2 are equivalent</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_2</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_2</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_1</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data_1</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">data_2</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
                 <span class="n">data_equivalence</span><span class="p">(</span><span class="n">data_1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">data_2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data_1</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -730,7 +730,12 @@
 
 <div class="viewcode-block" id="check_env">
 <a class="viewcode-back" href="../../../../api/utils/#gymnasium.utils.env_checker.check_env">[docs]</a>
-<span class="k">def</span> <span class="nf">check_env</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">Env</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_render_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check_env</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">gym</span><span class="o">.</span><span class="n">Env</span><span class="p">,</span>
+    <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip_render_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">skip_close_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that an environment follows Gymnasium&#39;s API.</span>
 
 <span class="sd">    .. py:currentmodule:: gymnasium.Env</span>
@@ -743,7 +748,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        env: The Gym environment that will be checked</span>
 <span class="sd">        warn: Ignored, previously silenced particular warnings</span>
-<span class="sd">        skip_render_check: Whether to skip the checks for the render method. True by default (useful for the CI)</span>
+<span class="sd">        skip_render_check: Whether to skip the checks for the render method. False by default (useful for the CI)</span>
+<span class="sd">        skip_close_check: Whether to skip the checks for the close method. False by default</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">warn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`check_env(warn=...)` parameter is now ignored.&quot;</span><span class="p">)</span>
@@ -797,7 +803,7 @@
                 <span class="s2">&quot;Not able to test alternative render modes due to the environment not having a spec. Try instantialising the environment through gymnasium.make&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_close_check</span> <span class="ow">and</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">new_env</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">spec</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
         <span class="n">new_env</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
@@ -924,7 +930,7 @@
         })()
       </script>
 
-    <script src="../../../../_static/documentation_options.js?v=a4d19d35"></script>
+    <script src="../../../../_static/documentation_options.js?v=ed34540e"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/furo.js?v=7660844c"></script>
