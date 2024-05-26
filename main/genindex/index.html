@@ -10,7 +10,7 @@
     <meta property="og:url" content="https://gymnasium.farama.org/genindex.html" /><meta property="og:image" content="https://gymnasium.farama.org/_static/img/gymnasium-github.png" /><meta name="twitter:card" content="summary_large_image"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="../search/" />
         <link rel="canonical" href="https://gymnasium.farama.org/genindex.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.08.19.dev1 --><title>Index - Gymnasium Documentation</title>
+    <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2023.08.19.dev1 --><title>Index - Gymnasium Documentation</title>
 <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=3e7f4c72" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -394,11 +394,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../environments/atari/zaxxon/">Zaxxon</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../environments/third_party_environments/">Third-Party Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../environments/third_party_environments/">External Environments</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/gymnasium_basics/">Gymnasium Basics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Gymnasium Basics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/gymnasium_basics/load_quadruped_model/">Load custom quadruped robot environments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/gymnasium_basics/handling_time_limits/">Handling Time Limits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/gymnasium_basics/implementing_custom_wrappers/">Implementing Custom Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/gymnasium_basics/environment_creation/">Make your own custom environment</a></li>
@@ -510,8 +511,14 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/vector/utils/#gymnasium.vector.utils.batch_space">batch_space() (in module gymnasium.vector.utils)</a>
 </li>
+        <li><a href="../api/utils/#gymnasium.utils.performance.benchmark_init">benchmark_init() (in module gymnasium.utils.performance)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/utils/#gymnasium.utils.performance.benchmark_render">benchmark_render() (in module gymnasium.utils.performance)</a>
+</li>
+        <li><a href="../api/utils/#gymnasium.utils.performance.benchmark_step">benchmark_step() (in module gymnasium.utils.performance)</a>
+</li>
         <li><a href="../api/spaces/fundamental/#gymnasium.spaces.Box">Box (class in gymnasium.spaces)</a>
 </li>
     </ul></td>
@@ -783,6 +790,8 @@
         <li><a href="../api/env/#gymnasium.Env.metadata">metadata (gymnasium.Env attribute)</a>
 
         <ul>
+          <li><a href="../api/vector/#gymnasium.vector.VectorEnv.metadata">(gymnasium.vector.VectorEnv attribute)</a>
+</li>
           <li><a href="../api/wrappers/#gymnasium.Wrapper.metadata">(gymnasium.Wrapper property)</a>
 </li>
         </ul></li>
@@ -828,6 +837,10 @@
         <ul>
           <li><a href="../api/spaces/#gymnasium.spaces.Space.np_random">(gymnasium.spaces.Space property)</a>
 </li>
+          <li><a href="../api/vector/async_vector_env/#gymnasium.vector.AsyncVectorEnv.np_random">(gymnasium.vector.AsyncVectorEnv property)</a>
+</li>
+          <li><a href="../api/vector/sync_vector_env/#gymnasium.vector.SyncVectorEnv.np_random">(gymnasium.vector.SyncVectorEnv property)</a>
+</li>
           <li><a href="../api/vector/#gymnasium.vector.VectorEnv.np_random">(gymnasium.vector.VectorEnv property)</a>
 </li>
           <li><a href="../api/wrappers/#gymnasium.Wrapper.np_random">(gymnasium.Wrapper property)</a>
@@ -837,6 +850,18 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/utils/#gymnasium.utils.seeding.np_random">np_random() (in module gymnasium.utils.seeding)</a>
 </li>
+        <li><a href="../api/env/#gymnasium.Env.np_random_seed">np_random_seed (gymnasium.Env property)</a>
+
+        <ul>
+          <li><a href="../api/vector/async_vector_env/#gymnasium.vector.AsyncVectorEnv.np_random_seed">(gymnasium.vector.AsyncVectorEnv property)</a>
+</li>
+          <li><a href="../api/vector/sync_vector_env/#gymnasium.vector.SyncVectorEnv.np_random_seed">(gymnasium.vector.SyncVectorEnv property)</a>
+</li>
+          <li><a href="../api/vector/#gymnasium.vector.VectorEnv.np_random_seed">(gymnasium.vector.VectorEnv property)</a>
+</li>
+          <li><a href="../api/wrappers/#gymnasium.Wrapper.np_random_seed">(gymnasium.Wrapper property)</a>
+</li>
+        </ul></li>
         <li><a href="../api/vector/#gymnasium.vector.VectorEnv.num_envs">num_envs (gymnasium.vector.VectorEnv attribute)</a>
 </li>
         <li><a href="../api/wrappers/misc_wrappers/#gymnasium.wrappers.NumpyToTorch">NumpyToTorch (class in gymnasium.wrappers)</a>
@@ -872,6 +897,8 @@
         <li><a href="../api/vector/wrappers/#gymnasium.vector.VectorObservationWrapper.observations">observations() (gymnasium.vector.VectorObservationWrapper method)</a>
 </li>
         <li><a href="../api/wrappers/observation_wrappers/#gymnasium.ObservationWrapper">ObservationWrapper (class in gymnasium)</a>
+</li>
+        <li><a href="../api/spaces/composite/#gymnasium.spaces.OneOf">OneOf (class in gymnasium.spaces)</a>
 </li>
         <li><a href="../api/wrappers/misc_wrappers/#gymnasium.wrappers.OrderEnforcing">OrderEnforcing (class in gymnasium.wrappers)</a>
 </li>
@@ -1020,6 +1047,8 @@
 </li>
           <li><a href="../api/spaces/fundamental/#gymnasium.spaces.MultiDiscrete.sample">(gymnasium.spaces.MultiDiscrete method)</a>
 </li>
+          <li><a href="../api/spaces/composite/#gymnasium.spaces.OneOf.sample">(gymnasium.spaces.OneOf method)</a>
+</li>
           <li><a href="../api/spaces/composite/#gymnasium.spaces.Sequence.sample">(gymnasium.spaces.Sequence method)</a>
 </li>
           <li><a href="../api/spaces/#gymnasium.spaces.Space.sample">(gymnasium.spaces.Space method)</a>
@@ -1044,6 +1073,8 @@
 </li>
           <li><a href="../api/spaces/fundamental/#gymnasium.spaces.MultiDiscrete.seed">(gymnasium.spaces.MultiDiscrete method)</a>
 </li>
+          <li><a href="../api/spaces/composite/#gymnasium.spaces.OneOf.seed">(gymnasium.spaces.OneOf method)</a>
+</li>
           <li><a href="../api/spaces/composite/#gymnasium.spaces.Sequence.seed">(gymnasium.spaces.Sequence method)</a>
 </li>
           <li><a href="../api/spaces/#gymnasium.spaces.Space.seed">(gymnasium.spaces.Space method)</a>
@@ -1053,10 +1084,10 @@
           <li><a href="../api/spaces/composite/#gymnasium.spaces.Tuple.seed">(gymnasium.spaces.Tuple method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/spaces/composite/#gymnasium.spaces.Sequence">Sequence (class in gymnasium.spaces)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/spaces/composite/#gymnasium.spaces.Sequence">Sequence (class in gymnasium.spaces)</a>
+</li>
         <li><a href="../api/vector/async_vector_env/#gymnasium.vector.AsyncVectorEnv.set_attr">set_attr() (gymnasium.vector.AsyncVectorEnv method)</a>
 
         <ul>
@@ -1336,8 +1367,8 @@
         })()
       </script>
 
-    <script src="../_static/documentation_options.js?v=ed34540e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=31d51385"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=7660844c"></script>
     
