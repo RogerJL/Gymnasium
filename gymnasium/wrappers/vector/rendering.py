@@ -22,12 +22,18 @@ class HumanRendering(VectorWrapper):
         "depth_array_list",
     ]
 
-    def __init__(self, env: VectorEnv, screen_size: tuple[int, int] | None = None):
+    def __init__(
+        self,
+        env: VectorEnv,
+        screen_size: tuple[int, int] | None = None,
+        auto_rendering: bool = True,
+    ):
         """Constructor for Human Rendering of Vector-based environments.
 
         Args:
             env: The vector environment
             screen_size: The rendering screen size otherwise the environment sub-env render size is used
+            auto_rendering: Whether to automatically render the environment on step() and reset()
         """
         VectorWrapper.__init__(self, env)
 
@@ -35,6 +41,7 @@ class HumanRendering(VectorWrapper):
         self.scaled_subenv_size, self.num_rows, self.num_cols = None, None, None
         self.window = None  # Has to be initialized before asserts, as self.window is used in auto close
         self.clock = None
+        self.auto_rendering = auto_rendering
 
         assert (
             self.env.render_mode in self.ACCEPTED_RENDER_MODES
@@ -57,7 +64,8 @@ class HumanRendering(VectorWrapper):
     ) -> tuple[ObsType, ArrayType, ArrayType, ArrayType, dict[str, Any]]:
         """Perform a step in the base environment and render a frame to the screen."""
         result = super().step(actions)
-        self._render_frame()
+        if self.auto_rendering:
+            self._render_frame()
         return result
 
     def reset(
@@ -68,8 +76,13 @@ class HumanRendering(VectorWrapper):
     ) -> tuple[ObsType, dict[str, Any]]:
         """Reset the base environment and render a frame to the screen."""
         result = super().reset(seed=seed, options=options)
-        self._render_frame()
+        if self.auto_rendering:
+            self._render_frame()
         return result
+
+    def render(self):
+        """This method doesn't do much, actual rendering is usually performed in :meth:`step` and :meth:`reset`."""
+        return self._render_frame()
 
     def _render_frame(self):
         """Fetch the last frame from the base environment and render it to the screen."""
@@ -82,11 +95,12 @@ class HumanRendering(VectorWrapper):
 
         assert self.env.render_mode is not None
         if self.env.render_mode.endswith("_last"):
-            subenv_renders = self.env.render()
-            assert isinstance(subenv_renders, list)
-            subenv_renders = subenv_renders[-1]
+            last_render = self.env.render()
+            assert isinstance(last_render, list)
+            subenv_renders = last_render[-1]
         else:
-            subenv_renders = self.env.render()
+            last_render = self.env.render()
+            subenv_renders = last_render
 
         assert subenv_renders is not None
         assert len(subenv_renders) == self.num_envs
@@ -172,6 +186,8 @@ class HumanRendering(VectorWrapper):
         pygame.event.pump()
         self.clock.tick(self.metadata["render_fps"])
         pygame.display.flip()
+
+        return last_render
 
     def close(self):
         """Close the rendering window."""

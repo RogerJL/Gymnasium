@@ -463,11 +463,12 @@ class HumanRendering(
         "depth_array_list",
     ]
 
-    def __init__(self, env: gym.Env[ObsType, ActType]):
+    def __init__(self, env: gym.Env[ObsType, ActType], auto_rendering: bool = True):
         """Initialize a :class:`HumanRendering` instance.
 
         Args:
             env: The environment that is being wrapped
+            auto_rendering: Whether to automatically render the environment on step() and reset()
         """
         gym.utils.RecordConstructorArgs.__init__(self)
         gym.Wrapper.__init__(self, env)
@@ -475,6 +476,7 @@ class HumanRendering(
         self.screen_size = None
         self.window = None  # Has to be initialized before asserts, as self.window is used in auto close
         self.clock = None
+        self.auto_rendering = auto_rendering
 
         assert (
             self.env.render_mode in self.ACCEPTED_RENDER_MODES
@@ -495,7 +497,8 @@ class HumanRendering(
     def step(self, action: ActType) -> tuple[ObsType, SupportsFloat, bool, bool, dict]:
         """Perform a step in the base environment and render a frame to the screen."""
         result = super().step(action)
-        self._render_frame()
+        if self.auto_rendering:
+            self._render_frame()
         return result
 
     def reset(
@@ -503,12 +506,13 @@ class HumanRendering(
     ) -> tuple[ObsType, dict[str, Any]]:
         """Reset the base environment and render a frame to the screen."""
         result = super().reset(seed=seed, options=options)
-        self._render_frame()
+        if self.auto_rendering:
+            self._render_frame()
         return result
 
-    def render(self) -> None:
-        """This method doesn't do much, actual rendering is performed in :meth:`step` and :meth:`reset`."""
-        return None
+    def render(self):
+        """This method doesn't do much, actual rendering is usually performed in :meth:`step` and :meth:`reset`."""
+        return self._render_frame()
 
     def _render_frame(self):
         """Fetch the last frame from the base environment and render it to the screen."""
@@ -520,11 +524,12 @@ class HumanRendering(
             )
         assert self.env.render_mode is not None
         if self.env.render_mode.endswith("_list"):
-            last_rgb_array = self.env.render()
-            assert isinstance(last_rgb_array, list)
-            last_rgb_array = last_rgb_array[-1]
+            last_render = self.env.render()
+            assert isinstance(last_render, list)
+            last_rgb_array = last_render[-1]
         else:
-            last_rgb_array = self.env.render()
+            last_render = self.env.render()
+            last_rgb_array = last_render
 
         assert isinstance(
             last_rgb_array, np.ndarray
@@ -552,6 +557,8 @@ class HumanRendering(
         pygame.event.pump()
         self.clock.tick(self.metadata["render_fps"])
         pygame.display.flip()
+
+        return last_render
 
     def close(self):
         """Close the rendering window."""

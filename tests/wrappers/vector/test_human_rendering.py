@@ -1,6 +1,7 @@
 """Test suite of HumanRendering wrapper."""
 import re
 
+import numpy as np
 import pytest
 
 import gymnasium as gym
@@ -19,6 +20,7 @@ def test_num_envs_screen_size(env_id, num_envs, screen_size):
     envs.reset()
     for _ in range(25):
         envs.step(envs.action_space.sample())
+
     envs.close()
 
 
@@ -41,3 +43,26 @@ def test_render_modes():
         ),
     ):
         HumanRendering(envs)
+
+
+@pytest.mark.parametrize("env_id", ["CartPole-v1"])
+@pytest.mark.parametrize("num_envs", [1, 3, 9])
+@pytest.mark.parametrize("screen_size", [None])
+def test_human_rendering_manual(env_id, num_envs, screen_size):
+    envs = gym.make_vec(env_id, num_envs=num_envs, render_mode="rgb_array")
+    envs = HumanRendering(envs, screen_size=screen_size, auto_rendering=False)
+
+    assert envs.render_mode == "human"
+    assert not envs.auto_rendering
+
+    envs.reset()
+
+    # Test Manual render() call
+    envs.step(envs.action_space.sample())
+    rendering = envs.render()
+    # output should match mode, list of environment rgb_arrays
+    assert isinstance(rendering, list)
+    assert len(rendering) == num_envs
+    assert isinstance(rendering[0], np.ndarray)
+
+    envs.close()
