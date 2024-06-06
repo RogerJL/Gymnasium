@@ -65,7 +65,7 @@ class HumanRendering(VectorWrapper):
         """Perform a step in the base environment and render a frame to the screen."""
         result = super().step(actions)
         if self.auto_rendering:
-            self._render_frame()
+            self._latest_frame = self._render_frame()
         return result
 
     def reset(
@@ -77,11 +77,15 @@ class HumanRendering(VectorWrapper):
         """Reset the base environment and render a frame to the screen."""
         result = super().reset(seed=seed, options=options)
         if self.auto_rendering:
-            self._render_frame()
+            self._latest_frame = self._render_frame()
         return result
 
     def render(self):
         """This method doesn't do much, actual rendering is usually performed in :meth:`step` and :meth:`reset`."""
+        if self.auto_rendering and self._latest_frame is not None:
+            frame = self._latest_frame
+            self._latest_frame = None
+            return frame
         return self._render_frame()
 
     def _render_frame(self):
