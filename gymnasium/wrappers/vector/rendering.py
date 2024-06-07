@@ -201,4 +201,5 @@ class HumanRendering(VectorWrapper):
 
             pygame.display.quit()
             pygame.quit()
+            self.window = None  # try to prevent strange Python 3.8 bug, later complaining about no self.window
         super().close()
