@@ -473,18 +473,18 @@ class HumanRendering(
         gym.utils.RecordConstructorArgs.__init__(self)
         gym.Wrapper.__init__(self, env)
 
+        self.screen_size = None
+        self.window = None  # Has to be initialized before the asserts are run as it self.window used in auto close
+        self.clock = None
+        self.auto_rendering = auto_rendering
+        self._latest_frame = None
+
         assert (
             self.env.render_mode in self.ACCEPTED_RENDER_MODES
         ), f"Expected env.render_mode to be one of {self.ACCEPTED_RENDER_MODES} but got '{env.render_mode}'"
         assert (
             "render_fps" in self.env.metadata
         ), "The base environment must specify 'render_fps' to be used with the HumanRendering wrapper"
-
-        self.screen_size = None
-        self.window = None
-        self.clock = None
-        self.auto_rendering = auto_rendering
-        self._latest_frame = None
 
         # TODO: needed?
         if "human" not in self.metadata["render_modes"]:
