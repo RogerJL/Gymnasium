@@ -2,6 +2,7 @@
 
 * ``NormalizeReward`` - Normalizes the rewards to a mean and standard deviation
 """
+
 from __future__ import annotations
 
 from typing import Any, SupportsFloat
@@ -18,9 +19,7 @@ __all__ = ["NormalizeReward"]
 
 
 class NormalizeReward(VectorWrapper, gym.utils.RecordConstructorArgs):
-    r"""This wrapper will normalize immediate rewards s.t. their exponential moving average has a fixed variance.
-
-    The exponential moving average will have variance :math:`(1 - \gamma)^2`.
+    r"""This wrapper will scale rewards s.t. their exponential moving average has an approximately fixed variance.
 
     The property `_update_running_mean` allows to freeze/continue the running mean calculation of the reward
     statistics. If `True` (default), the `RunningMeanStd` will get updated every time `self.normalize()` is called.
@@ -43,9 +42,9 @@ class NormalizeReward(VectorWrapper, gym.utils.RecordConstructorArgs):
         ...
         >>> envs.close()
         >>> np.mean(episode_rewards)
-        -0.03359492141887935
+        np.float64(-0.03359492141887935)
         >>> np.std(episode_rewards)
-        0.029028230434438706
+        np.float64(0.029028230434438706)
 
     Example with the normalize reward wrapper:
         >>> import gymnasium as gym
@@ -61,9 +60,9 @@ class NormalizeReward(VectorWrapper, gym.utils.RecordConstructorArgs):
         ...
         >>> envs.close()
         >>> np.mean(episode_rewards)
-        -0.1598639586606745
+        np.float64(-0.1598639586606745)
         >>> np.std(episode_rewards)
-        0.27800309628058434
+        np.float64(0.27800309628058434)
     """
 
     def __init__(
@@ -72,7 +71,7 @@ class NormalizeReward(VectorWrapper, gym.utils.RecordConstructorArgs):
         gamma: float = 0.99,
         epsilon: float = 1e-8,
     ):
-        """This wrapper will normalize immediate rewards s.t. their exponential moving average has a fixed variance.
+        """This wrapper will normalize immediate rewards s.t. their exponential moving average has an approximately fixed variance.
 
         Args:
             env (env): The environment to apply the wrapper

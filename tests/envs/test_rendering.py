@@ -32,6 +32,10 @@ def check_rendered(rendered_frame, mode: str):
     elif mode == "depth_array":
         assert isinstance(rendered_frame, np.ndarray)
         assert len(rendered_frame.shape) == 2
+    elif mode == "rgbd_tuple":
+        rendered_rgb, rendered_depth = rendered_frame
+        assert isinstance(rendered_rgb, np.ndarray)
+        assert isinstance(rendered_depth, np.ndarray)
     else:
         warn(
             f"Unknown render mode: {mode}, cannot check that the rendered data is correct. Add case to `check_rendered`"
@@ -42,7 +46,7 @@ def check_rendered(rendered_frame, mode: str):
 render_mode_env_specs = [
     spec
     for spec in all_testing_env_specs
-    if "mujoco" not in spec.entry_point or "v4" in spec.id
+    if "mujoco" not in spec.entry_point or spec.version >= 4
 ]
 
 

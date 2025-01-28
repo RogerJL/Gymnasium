@@ -1,4 +1,5 @@
 """Test the vector environment information."""
+
 from __future__ import annotations
 
 from typing import Any, SupportsFloat
@@ -139,7 +140,7 @@ class ReturnInfoEnv(gym.Env):
 
 
 @pytest.mark.parametrize("vectorizer", [AsyncVectorEnv, SyncVectorEnv])
-def test_vectorizers(vectorizer):
+def test_vector_return_info(vectorizer):
     vec_env = vectorizer(
         [
             lambda: ReturnInfoEnv([{"a": 1}, {"c": np.array([1, 2])}]),

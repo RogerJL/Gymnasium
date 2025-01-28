@@ -1,8 +1,10 @@
 """Implementation of a space that represents the cartesian product of other spaces as a dictionary."""
+
 from __future__ import annotations
 
 import collections.abc
 import typing
+from collections import OrderedDict
 from typing import Any, KeysView, Sequence
 
 import numpy as np
@@ -19,7 +21,7 @@ class Dict(Space[typing.Dict[str, Any]], typing.Mapping[str, Space[Any]]):
         >>> from gymnasium.spaces import Dict, Box, Discrete
         >>> observation_space = Dict({"position": Box(-1, 1, shape=(2,)), "color": Discrete(3)}, seed=42)
         >>> observation_space.sample()
-        {'color': 0, 'position': array([-0.3991573 ,  0.21649833], dtype=float32)}
+        {'color': np.int64(0), 'position': array([-0.3991573 ,  0.21649833], dtype=float32)}
 
         With a nested dict:
 
@@ -65,8 +67,9 @@ class Dict(Space[typing.Dict[str, Any]], typing.Mapping[str, Space[Any]]):
             seed: Optionally, you can use this argument to seed the RNGs of the spaces that make up the :class:`Dict` space.
             **spaces_kwargs: If ``spaces`` is ``None``, you need to pass the constituent spaces as keyword arguments, as described above.
         """
-        # Convert the spaces into an OrderedDict
-        if isinstance(spaces, collections.abc.Mapping):
+        if isinstance(spaces, OrderedDict):
+            spaces = dict(spaces.items())
+        elif isinstance(spaces, collections.abc.Mapping):
             # for legacy reasons, we need to preserve the sorted dictionary items.
             # as this could matter for projects flatten the dictionary.
             try:

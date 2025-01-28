@@ -7,7 +7,7 @@ title: Train an Agent
 
 This page provides a short outline of how to train an agent for a Gymnasium environment, in particular, we will use a tabular based Q-learning to solve the Blackjack v1 environment. For a full complete version of this tutorial and more training tutorials for other environments and algorithm, see [this](../tutorials/training_agents). Please read [basic usage](basic_usage) before reading this page. Before we implement any code, here is an overview of Blackjack and Q-learning.
 
-Blackjack is one of the most popular casino card games that is also infamous for being beatable under certain conditions. This version of the game uses an infinite deck (we draw the cards with replacement), so counting cards won't be a viable strategy in our simulated game. The observation is a tuple of the player's current sum, the value of the dealers face-up card and a boolean value on whether the player holds a usable case. The agent can pick between two actions: stand (0) such that the player takes no more cards and hit (1) such that the player will take another player. To win, your card sum should be greater than the dealers without exceeding 21. The game ends if the player selects stand or if the card sum is greater than 21. Full documentation can be found at [https://gymnasium.farama.org/environments/toy_text/blackjack](https://gymnasium.farama.org/environments/toy_text/blackjack).
+Blackjack is one of the most popular casino card games that is also infamous for being beatable under certain conditions. This version of the game uses an infinite deck (we draw the cards with replacement), so counting cards won't be a viable strategy in our simulated game. The observation is a tuple of the player's current sum, the value of the dealers face-up card and a boolean value on whether the player holds a usable case. The agent can pick between two actions: stand (0) such that the player takes no more cards and hit (1) such that the player will take another card. To win, your card sum should be greater than the dealers without exceeding 21. The game ends if the player selects stand or if the card sum is greater than 21. Full documentation can be found at [https://gymnasium.farama.org/environments/toy_text/blackjack](https://gymnasium.farama.org/environments/toy_text/blackjack).
 
 Q-learning is a model-free off-policy learning algorithm by Watkins, 1989 for environments with discrete action spaces and was famous for being the first reinforcement learning algorithm to prove convergence to an optimal policy under certain conditions.
 
@@ -105,7 +105,7 @@ class BlackjackAgent:
 
 ## Training the agent
 
-To train the agent, we will let the agent play one episode (one complete game is called an episode) at a time and then update it's Q-values after each episode. The agent will have to experience a lot of episodes to explore the environment sufficiently.
+To train the agent, we will let the agent play one episode (one complete game is called an episode) at a time and update it's Q-values after each action taken during the episode. The agent will have to experience a lot of episodes to explore the environment sufficiently.
 
 ```python
 # hyperparameters
@@ -115,7 +115,11 @@ start_epsilon = 1.0
 epsilon_decay = start_epsilon / (n_episodes / 2)  # reduce the exploration over time
 final_epsilon = 0.1
 
+env = gym.make("Blackjack-v1", sab=False)
+env = gym.wrappers.RecordEpisodeStatistics(env, buffer_length=n_episodes)
+
 agent = BlackjackAgent(
+    env=env,
     learning_rate=learning_rate,
     initial_epsilon=start_epsilon,
     epsilon_decay=epsilon_decay,
@@ -127,9 +131,6 @@ Info: The current hyperparameters are set to quickly train a decent agent. If yo
 
 ```python
 from tqdm import tqdm
-
-env = gym.make("Blackjack-v1", sab=False)
-env = gym.wrappers.RecordEpisodeStatistics(env, deque_size=n_episodes)
 
 for episode in tqdm(range(n_episodes)):
     obs, info = env.reset()
@@ -150,13 +151,52 @@ for episode in tqdm(range(n_episodes)):
     agent.decay_epsilon()
 ```
 
+You can use `matplotlib` to visualize the training reward and length.
+
+```python
+from matplotlib import pyplot as plt
+
+def get_moving_avgs(arr, window, convolution_mode):
+    return np.convolve(
+        np.array(arr).flatten(),
+        np.ones(window),
+        mode=convolution_mode
+    ) / window
+
+# Smooth over a 500 episode window
+rolling_length = 500
+fig, axs = plt.subplots(ncols=3, figsize=(12, 5))
+
+axs[0].set_title("Episode rewards")
+reward_moving_average = get_moving_avgs(
+    env.return_queue,
+    rolling_length,
+    "valid"
+)
+axs[0].plot(range(len(reward_moving_average)), reward_moving_average)
+
+axs[1].set_title("Episode lengths")
+length_moving_average = get_moving_avgs(
+    env.length_queue,
+    rolling_length,
+    "valid"
+)
+axs[1].plot(range(len(length_moving_average)), length_moving_average)
+
+axs[2].set_title("Training Error")
+training_error_moving_average = get_moving_avgs(
+    agent.training_error,
+    rolling_length,
+    "same"
+)
+axs[2].plot(range(len(training_error_moving_average)), training_error_moving_average)
+plt.tight_layout()
+plt.show()
+
+
+```
+
 ![](../_static/img/tutorials/blackjack_training_plots.png "Training Plot")
-
-## Visualising the policy
-
-![](../_static/img/tutorials/blackjack_with_usable_ace.png "With a usable ace")
-
-![](../_static/img/tutorials/blackjack_without_usable_ace.png "Without a usable ace")
 
 Hopefully this tutorial helped you get a grip of how to interact with Gymnasium environments and sets you on a journey to solve many more RL challenges.
 

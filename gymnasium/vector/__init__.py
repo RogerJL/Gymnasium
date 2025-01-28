@@ -1,8 +1,10 @@
 """Experimental vector env API."""
+
 from gymnasium.vector import utils
 from gymnasium.vector.async_vector_env import AsyncVectorEnv
 from gymnasium.vector.sync_vector_env import SyncVectorEnv
 from gymnasium.vector.vector_env import (
+    AutoresetMode,
     VectorActionWrapper,
     VectorEnv,
     VectorObservationWrapper,
@@ -20,4 +22,5 @@ __all__ = [
     "SyncVectorEnv",
     "AsyncVectorEnv",
     "utils",
+    "AutoresetMode",
 ]

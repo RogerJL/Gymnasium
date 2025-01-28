@@ -374,7 +374,7 @@ class LunarLander(gym.Env, EzPickle):
         # Create Lander body
         initial_y = VIEWPORT_H / SCALE
         initial_x = VIEWPORT_W / SCALE / 2
-        self.lander: Box2D.b2Body = self.world.CreateDynamicBody(
+        self.lander = self.world.CreateDynamicBody(
             position=(initial_x, initial_y),
             angle=0.0,
             fixtures=fixtureDef(
@@ -509,7 +509,7 @@ class LunarLander(gym.Env, EzPickle):
             )
 
         if self.continuous:
-            action = np.clip(action, -1, +1).astype(np.float32)
+            action = np.clip(action, -1, +1).astype(np.float64)
         else:
             assert self.action_space.contains(
                 action

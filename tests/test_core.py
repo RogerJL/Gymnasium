@@ -1,4 +1,5 @@
 """Checks that the core Gymnasium API is implemented as expected."""
+
 from __future__ import annotations
 
 import re
@@ -213,6 +214,16 @@ def test_get_set_wrapper_attr():
     with pytest.raises(AttributeError):
         env.unwrapped._disable_render_order_enforcing
     assert env.get_wrapper_attr("_disable_render_order_enforcing") is True
+
+    # Test with top-most wrapper
+    env.MY_ATTRIBUTE_1 = True
+    assert env.get_wrapper_attr("MY_ATTRIBUTE_1") is True
+    env.set_wrapper_attr("MY_ATTRIBUTE_1", False)
+    assert env.get_wrapper_attr("MY_ATTRIBUTE_1") is False
+
+    # Test with non-existing attribute
+    env.set_wrapper_attr("MY_ATTRIBUTE_2", True)
+    assert getattr(env, "MY_ATTRIBUTE_2") is True
 
 
 class TestRandomSeeding:

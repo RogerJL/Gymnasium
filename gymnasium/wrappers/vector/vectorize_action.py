@@ -1,4 +1,5 @@
 """Vectorizes action wrappers to work for `VectorEnv`."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -8,6 +9,7 @@ import numpy as np
 
 from gymnasium import Space
 from gymnasium.core import ActType, Env
+from gymnasium.logger import warn
 from gymnasium.vector import VectorActionWrapper, VectorEnv
 from gymnasium.vector.utils import batch_space, concatenate, create_empty_array, iterate
 from gymnasium.wrappers import transform_action
@@ -32,7 +34,7 @@ class TransformAction(VectorActionWrapper):
         >>> obs
         array([[-0.46553135, -0.00142543],
                [-0.498371  , -0.00715587],
-               [-0.4651575 , -0.00624371]], dtype=float32)
+               [-0.46515748, -0.00624371]], dtype=float32)
 
     Example - With action transformation:
         >>> import gymnasium as gym
@@ -60,18 +62,31 @@ class TransformAction(VectorActionWrapper):
         env: VectorEnv,
         func: Callable[[ActType], Any],
         action_space: Space | None = None,
+        single_action_space: Space | None = None,
     ):
         """Constructor for the lambda action wrapper.
 
         Args:
             env: The vector environment to wrap
             func: A function that will transform an action. If this transformed action is outside the action space of ``env.action_space`` then provide an ``action_space``.
-            action_space: The action spaces of the wrapper, if None, then it is assumed the same as ``env.action_space``.
+            action_space: The action spaces of the wrapper. If None, then it is computed from ``single_action_space``. If ``single_action_space`` is not provided either, then it is assumed to be the same as ``env.action_space``.
+            single_action_space: The action space of the non-vectorized environment. If None, then it is assumed the same as ``env.single_action_space``.
         """
         super().__init__(env)
 
-        if action_space is not None:
+        if action_space is None:
+            if single_action_space is not None:
+                self.single_action_space = single_action_space
+                self.action_space = batch_space(single_action_space, self.num_envs)
+        else:
             self.action_space = action_space
+            if single_action_space is not None:
+                self.single_action_space = single_action_space
+            # TODO: We could compute single_action_space from the action_space if only the latter is provided and avoid the warning below.
+        if self.action_space != batch_space(self.single_action_space, self.num_envs):
+            warn(
+                f"For {env}, the action space and the batched single action space don't match as expected, action_space={env.action_space}, batched single_action_space={batch_space(self.single_action_space, self.num_envs)}"
+            )
 
         self.func = func
 
@@ -137,7 +152,7 @@ class VectorizeTransformAction(VectorActionWrapper):
         self.action_space = batch_space(self.single_action_space, self.num_envs)
 
         self.same_out = self.action_space == self.env.action_space
-        self.out = create_empty_array(self.single_action_space, self.num_envs)
+        self.out = create_empty_array(self.env.single_action_space, self.num_envs)
 
     def actions(self, actions: ActType) -> ActType:
         """Applies the wrapper to each of the action.
@@ -150,7 +165,7 @@ class VectorizeTransformAction(VectorActionWrapper):
         """
         if self.same_out:
             return concatenate(
-                self.single_action_space,
+                self.env.single_action_space,
                 tuple(
                     self.wrapper.func(action)
                     for action in iterate(self.action_space, actions)
@@ -160,10 +175,10 @@ class VectorizeTransformAction(VectorActionWrapper):
         else:
             return deepcopy(
                 concatenate(
-                    self.single_action_space,
+                    self.env.single_action_space,
                     tuple(
                         self.wrapper.func(action)
-                        for action in iterate(self.env.action_space, actions)
+                        for action in iterate(self.action_space, actions)
                     ),
                     self.out,
                 )

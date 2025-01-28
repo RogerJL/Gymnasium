@@ -1,4 +1,5 @@
 """Implementation of a Jax-accelerated cartpole environment."""
+
 from __future__ import annotations
 
 from typing import Any, Tuple
@@ -12,8 +13,9 @@ from jax.random import PRNGKey
 import gymnasium as gym
 from gymnasium.envs.functional_jax_env import FunctionalJaxEnv, FunctionalJaxVectorEnv
 from gymnasium.error import DependencyNotInstalled
-from gymnasium.functional import ActType, FuncEnv, StateType
+from gymnasium.experimental.functional import ActType, FuncEnv, StateType
 from gymnasium.utils import EzPickle
+from gymnasium.vector import AutoresetMode
 
 
 RenderStateType = Tuple["pygame.Surface", "pygame.time.Clock"]  # type: ignore  # noqa: F821
@@ -271,7 +273,12 @@ class CartPoleJaxEnv(FunctionalJaxEnv, EzPickle):
 class CartPoleJaxVectorEnv(FunctionalJaxVectorEnv, EzPickle):
     """Jax-based implementation of the vectorized CartPole environment."""
 
-    metadata = {"render_modes": ["rgb_array"], "render_fps": 50, "jax": True}
+    metadata = {
+        "render_modes": ["rgb_array"],
+        "render_fps": 50,
+        "jax": True,
+        "autoreset_mode": AutoresetMode.NEXT_STEP,
+    }
 
     def __init__(
         self,

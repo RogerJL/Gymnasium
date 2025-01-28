@@ -86,10 +86,10 @@ class HumanoidStandupEnv(MujocoEnv, utils.EzPickle):
     | Num | Observation                                                                                                     | Min  | Max | Name (in corresponding XML file) | Joint | Type (Unit)                |
     | --- | --------------------------------------------------------------------------------------------------------------- | ---- | --- | -------------------------------- | ----- | -------------------------- |
     | 0   | z-coordinate of the torso (centre)                                                                              | -Inf | Inf | root                             | free  | position (m)               |
-    | 1   | x-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
-    | 2   | y-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
-    | 3   | z-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
-    | 4   | w-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
+    | 1   | w-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
+    | 2   | x-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
+    | 3   | y-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
+    | 4   | z-orientation of the torso (centre)                                                                             | -Inf | Inf | root                             | free  | angle (rad)                |
     | 5   | z-angle of the abdomen (in lower_waist)                                                                         | -Inf | Inf | abdomen_z                        | hinge | angle (rad)                |
     | 6   | y-angle of the abdomen (in lower_waist)                                                                         | -Inf | Inf | abdomen_y                        | hinge | angle (rad)                |
     | 7   | x-angle of the abdomen (in pelvis)                                                                              | -Inf | Inf | abdomen_x                        | hinge | angle (rad)                |
@@ -195,11 +195,11 @@ class HumanoidStandupEnv(MujocoEnv, utils.EzPickle):
     A reward for moving up (trying to stand up).
     This is not a relative reward, measuring how far up the robot has moved since the last timestep,
     but an absolute reward measuring how far up the Humanoid has moved up in total.
-    It is measured as $w{uph} \times (z_{after action} - 0)/dt$,
-    where $z_{after action}$ is the z coordinate of the torso after taking an action,
+    It is measured as $w_{uph} \times \frac{z_{after\_action} - 0}{dt}$,
+    where $z_{after\_action}$ is the z coordinate of the torso after taking an action,
     and $dt$ is the time between actions, which depends on the `frame_skip` parameter (default is $5$),
     and `frametime`, which is $0.01$ - so the default is $dt = 5 \times 0.01 = 0.05$,
-    and $w_{uph}$ is `uph_cost_weight`.
+    and $w_{uph}$ is `uph_cost_weight` (default is $1$).
     - *quad_ctrl_cost*:
     A negative reward to penalize the Humanoid for taking actions that are too large.
     $w_{quad\_control} \times \|action\|_2^2$,
@@ -282,6 +282,7 @@ class HumanoidStandupEnv(MujocoEnv, utils.EzPickle):
             "human",
             "rgb_array",
             "depth_array",
+            "rgbd_tuple",
         ],
     }
 
@@ -357,6 +358,7 @@ class HumanoidStandupEnv(MujocoEnv, utils.EzPickle):
                 "human",
                 "rgb_array",
                 "depth_array",
+                "rgbd_tuple",
             ],
             "render_fps": int(np.round(1.0 / self.dt)),
         }

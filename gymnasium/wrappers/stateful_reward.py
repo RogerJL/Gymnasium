@@ -2,6 +2,7 @@
 
 * ``NormalizeReward`` - Normalizes the rewards to a mean and standard deviation
 """
+
 from __future__ import annotations
 
 from typing import Any, SupportsFloat
@@ -19,9 +20,7 @@ __all__ = ["NormalizeReward"]
 class NormalizeReward(
     gym.Wrapper[ObsType, ActType, ObsType, ActType], gym.utils.RecordConstructorArgs
 ):
-    r"""Normalizes immediate rewards such that their exponential moving average has a fixed variance.
-
-    The exponential moving average will have variance :math:`(1 - \gamma)^2`.
+    r"""Normalizes immediate rewards such that their exponential moving average has an approximately fixed variance.
 
     The property `_update_running_mean` allows to freeze/continue the running mean calculation of the reward
     statistics. If `True` (default), the `RunningMeanStd` will get updated every time `self.normalize()` is called.
@@ -51,7 +50,7 @@ class NormalizeReward(
         ...
         >>> env.close()
         >>> np.var(episode_rewards)
-        0.0008876301247721108
+        np.float64(0.0008876301247721108)
 
     Example with the normalize reward wrapper:
         >>> import numpy as np
@@ -67,9 +66,8 @@ class NormalizeReward(
         ...     episode_rewards.append(reward)
         ...
         >>> env.close()
-        >>> # will approach 0.99 with more episodes
         >>> np.var(episode_rewards)
-        0.010162116476634746
+        np.float64(0.010162116476634746)
 
     Change logs:
      * v0.21.0 - Initially added
@@ -82,7 +80,7 @@ class NormalizeReward(
         gamma: float = 0.99,
         epsilon: float = 1e-8,
     ):
-        """This wrapper will normalize immediate rewards s.t. their exponential moving average has a fixed variance.
+        """This wrapper will normalize immediate rewards s.t. their exponential moving average has an approximately fixed variance.
 
         Args:
             env (env): The environment to apply the wrapper
